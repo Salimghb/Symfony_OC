@@ -1,0 +1,7 @@
+services:
+    salim_plateforme.antispam:
+      class: Salim\PlateformeBundle\AntiSpam\SalimAntiSpam
+      arguments: 
+      - "@mailer"
+      - %locale%
+      - 5

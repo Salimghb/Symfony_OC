@@ -1,0 +1,3 @@
+salim_plateforme:
+    resource: "@SalimPlateformeBundle/Resources/config/routing.yml"
+    prefix:   /platform

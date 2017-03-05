@@ -2,6 +2,7 @@
 
 namespace Salim\PlateformeBundle\Repository;
 
+use Doctrine\ORM\QueryBuilder;
 /**
  * AdvertRepository
  *
@@ -10,4 +11,120 @@ namespace Salim\PlateformeBundle\Repository;
  */
 class AdvertRepository extends \Doctrine\ORM\EntityRepository
 {
+//QUERYBUILDER
+	public function myFindAll()
+	{
+		//SELECT * FROM Advert;
+		return $this 
+		-> createQueryBuilder('a')
+		-> getQuery()
+		-> getResult()
+		;
+	}
+	
+
+	public function myFindOne($id)
+	{
+		//SELECT * FROM Advert WHERE 'id'=$id;
+		return $this 
+		-> createQueryBuilder('a')
+		-> where('a.id = :id')
+		-> setParameter ('id', $id)
+		-> getQuery()
+		-> getResult()
+		;
+	}
+
+
+	public function findByAuthorAndDate ($author,$date)
+	{
+		//SELECT * FROM Advert WHERE 'author'=$author 
+		//AND 'date' < $date ORDER BY 'date' DESC;
+		return $this 
+		-> createQueryBuilder('a')
+		-> where ('a.author = :author')
+		-> setParameter ('author', $author)
+		-> andWhere ('a.date < :date')
+		-> setParameter ('date',$date)
+		-> orderBy('a.date','DESC')
+		-> getQuery()
+		-> getResult()
+		;
+	}
+
+
+	public function whereCurrentYear (QueryBuilder $qb)
+	{
+		//Ajout de la condition à la requète $qb
+		//"WHERE 'date' BETWEEN 2017-01-01 AND 2017-12-31";
+		$qb
+		-> andWhere('a.date BETWEEN :debut AND :fin')
+		//Entre le 1er janvier de cette année
+		-> setParameter('debut', new \Datetime( date('Y').'-01-01' ))
+		//Et le 31 décembre de cette année
+		-> setParameter('fin', new \Datetime( date('Y').'-12-31' ))
+		;
+	}
+
+//DQL
+	public function findAllDQL()
+	{
+		//SELECT * FROM Advert;
+		return $this
+		-> _em
+		-> createQuery("
+			SELECT a 
+			FROM SalimPlateformeBundle:Advert a
+			")
+		-> getResult()
+		;
+	}
+
+	public function myFindDQL($id)
+	{
+		//SELECT * FROM Advert WHERE 'id' = $id;
+		return $this
+		-> _em
+		-> createQuery("
+			SELECT a 
+			FROM SalimPlateformeBundle:Advert a 
+			WHERE a.id= :id
+			")
+		-> setParameter('id', $id)
+		-> getSingleResult()
+		;
+	}
+
+//JOINTURES
+	public function getAdvertWithApplications()
+	{
+		//SELECT * FROM Advert NATURAL JOIN Application AS app
+		return $this
+		-> createQueryBuilder('a') 
+		-> leftJoin('a.applications','app')
+		-> addSelect('app')
+		-> getQuery()
+		-> getResult()
+		;
+	}
+
+//PLATEFORME
+	public function getAdvertWithCategories (array $categoryNames)
+	{
+
+		
+		$qb = $this -> createQueryBuilder('a')
+		return $qb
+		-> innerJoin('a.categories','cat')
+		-> addSelect('cat')
+		-> where( $qb -> expr() -> in('cat.name', $categoryNames));
+		//expr() aide a traduire l'expression en DQL
+		//where($qb->expr()->in('cat.name',$categoryNames)) ===
+		//WHERE 'cat.name' IN $categoryNames
+		-> getQuery()
+		-> getResult()
+		;
+	}
+
+
 }

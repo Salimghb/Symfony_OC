@@ -168,7 +168,7 @@ class AdvertController extends Controller
 		$em -> persist($advert);
 
 		// Etape 1 bis : Aucune cascade n'est définie car 
-		// La relation est définie dans l'entité Applciation, 
+		// La relation est définie dans l'entité Application, 
 		// L'entité Advert ne sait pas qu'elle est liée à deux Application. 
 		// On doit tout persister à la main dans ce cas
 		$em -> persist($application1);
@@ -297,4 +297,19 @@ class AdvertController extends Controller
 
 	}
 
+	public function listAction()
+	{
+		$listAdverts = $this
+		->getDoctrine()
+		->getManager()
+		->getRepository('OCPlatformBundle:Advert')
+		->getAdvertWithApplications()
+		;
+
+		foreach ($listAdverts as $advert) {
+    	// Ne déclenche pas de requête : les candidatures sont déjà chargées !
+    	// Vous pourriez faire une boucle dessus pour les afficher toutes
+			$advert->getApplications();
+		}
+	}
 }

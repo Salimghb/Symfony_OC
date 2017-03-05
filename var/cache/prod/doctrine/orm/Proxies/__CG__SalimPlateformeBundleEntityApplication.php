@@ -176,6 +176,28 @@ class Application extends \Salim\PlateformeBundle\Entity\Application implements 
     /**
      * {@inheritDoc}
      */
+    public function increase()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'increase', []);
+
+        return parent::increase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function decrease()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'decrease', []);
+
+        return parent::decrease();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getId()
     {
         if ($this->__isInitialized__ === false) {

@@ -5473,10 +5473,10 @@ namespace
 {
 class Twig_Environment
 {
-const VERSION ='1.31.0';
-const VERSION_ID = 13100;
+const VERSION ='1.32.0';
+const VERSION_ID = 13200;
 const MAJOR_VERSION = 1;
-const MINOR_VERSION = 31;
+const MINOR_VERSION = 32;
 const RELEASE_VERSION = 0;
 const EXTRA_VERSION ='';
 protected $charset;
@@ -6441,7 +6441,7 @@ new Twig_SimpleFilter('capitalize','twig_capitalize_string_filter', array('needs
 new Twig_SimpleFilter('upper','strtoupper'),
 new Twig_SimpleFilter('lower','strtolower'),
 new Twig_SimpleFilter('striptags','strip_tags'),
-new Twig_SimpleFilter('trim','trim'),
+new Twig_SimpleFilter('trim','twig_trim_filter'),
 new Twig_SimpleFilter('nl2br','nl2br', array('pre_escape'=>'html','is_safe'=> array('html'))),
 new Twig_SimpleFilter('join','twig_join_filter'),
 new Twig_SimpleFilter('split','twig_split_filter', array('needs_environment'=> true)),
@@ -6839,6 +6839,22 @@ return true;
 return false;
 }
 return false;
+}
+function twig_trim_filter($string, $characterMask = null, $side ='both')
+{
+if (null === $characterMask) {
+$characterMask =" \t\n\r\0\x0B";
+}
+switch ($side) {
+case'both':
+return trim($string, $characterMask);
+case'left':
+return ltrim($string, $characterMask);
+case'right':
+return rtrim($string, $characterMask);
+default:
+throw new Twig_Error_Runtime('Trimming side must be "left", "right" or "both".');
+}
 }
 function twig_escape_filter(Twig_Environment $env, $string, $strategy ='html', $charset = null, $autoescape = false)
 {
@@ -9588,18 +9604,20 @@ if ($param->getClass() && $param->getClass()->isInstance($request)) {
 continue;
 }
 $name = $param->getName();
-if ($param->getClass()) {
+$class = $param->getClass();
+$hasType = $this->isParameterTypeSupported && $param->hasType();
+if ($class || $hasType) {
 if (!isset($configurations[$name])) {
 $configuration = new ParamConverter(array());
 $configuration->setName($name);
-$configuration->setClass($param->getClass()->getName());
 $configurations[$name] = $configuration;
-} elseif (null === $configurations[$name]->getClass()) {
-$configurations[$name]->setClass($param->getClass()->getName());
+}
+if ($class && null === $configurations[$name]->getClass()) {
+$configurations[$name]->setClass($class->getName());
 }
 }
 if (isset($configurations[$name])) {
-$configurations[$name]->setIsOptional($param->isOptional() || $param->isDefaultValueAvailable() || $this->isParameterTypeSupported && $param->hasType() && $param->getType()->allowsNull());
+$configurations[$name]->setIsOptional($param->isOptional() || $param->isDefaultValueAvailable() || $hasType && $param->getType()->allowsNull());
 }
 }
 return $configurations;
@@ -9930,7 +9948,7 @@ if (null === $template) {
 return;
 }
 if (!$template instanceof Template) {
-throw new \InvalidArgumentException('Request attribute "_template" is reserved for @Template annotations.');
+return;
 }
 $template->setOwner($controller = $event->getController());
 if (null === $template->getTemplate()) {

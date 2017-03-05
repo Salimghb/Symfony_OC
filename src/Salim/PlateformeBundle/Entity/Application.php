@@ -9,13 +9,14 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="application")
  * @ORM\Entity(repositoryClass="Salim\PlateformeBundle\Repository\ApplicationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 
 class Application
 {
 
     /**
-     * @ORM\ManyToOne(targetEntity = "Salim\PlateformeBundle\Entity\Advert")
+     * @ORM\ManyToOne(targetEntity = "Salim\PlateformeBundle\Entity\Advert", inversedBy="applications")
      * @ORM\JoinColumn(nullable=false)
      */
     private $advert;
@@ -44,11 +45,27 @@ class Application
      */
     private $date;
 
+
+
     public function __construct()
     {
-
     	$this->date = new \Datetime();
+    }
 
+    /**
+     * @ORM\PrePersist
+     */
+    public function increase()
+    {
+        $this->getAdvert()->increaseApplication();
+    }
+
+    /**
+     * @ORM\PreRemove
+     */
+    public function decrease()
+    {
+        $this->getAdvert()->decreaseApplication();
     }
 
     /**

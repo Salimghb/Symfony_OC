@@ -64,10 +64,10 @@ class Advert extends \Salim\PlateformeBundle\Entity\Advert implements \Doctrine\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'categories', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'image', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'id', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'date', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'title', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'author', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'content', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'published'];
+            return ['__isInitialized__', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'nbApplications', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'updatedAt', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'applications', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'categories', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'image', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'id', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'date', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'title', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'author', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'content', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'published'];
         }
 
-        return ['__isInitialized__', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'categories', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'image', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'id', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'date', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'title', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'author', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'content', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'published'];
+        return ['__isInitialized__', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'nbApplications', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'updatedAt', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'applications', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'categories', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'image', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'id', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'date', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'title', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'author', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'content', '' . "\0" . 'Salim\\PlateformeBundle\\Entity\\Advert' . "\0" . 'published'];
     }
 
     /**
@@ -173,6 +173,39 @@ class Advert extends \Salim\PlateformeBundle\Entity\Advert implements \Doctrine\
     }
 
     
+    /**
+     * {@inheritDoc}
+     */
+    public function updateDate()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'updateDate', []);
+
+        return parent::updateDate();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function increaseApplication()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'increaseApplication', []);
+
+        return parent::increaseApplication();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function decreaseApplication()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'decreaseApplication', []);
+
+        return parent::decreaseApplication();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -351,6 +384,83 @@ class Advert extends \Salim\PlateformeBundle\Entity\Advert implements \Doctrine\
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getCategories', []);
 
         return parent::getCategories();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addApplication(\Salim\PlateformeBundle\Entity\Application $application)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addApplication', [$application]);
+
+        return parent::addApplication($application);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeApplication(\Salim\PlateformeBundle\Entity\Application $application)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeApplication', [$application]);
+
+        return parent::removeApplication($application);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getApplications()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getApplications', []);
+
+        return parent::getApplications();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setUpdatedAt', [$updatedAt]);
+
+        return parent::setUpdatedAt($updatedAt);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUpdatedAt()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUpdatedAt', []);
+
+        return parent::getUpdatedAt();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setNbApplications($nbApplications)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setNbApplications', [$nbApplications]);
+
+        return parent::setNbApplications($nbApplications);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getNbApplications()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getNbApplications', []);
+
+        return parent::getNbApplications();
     }
 
 }

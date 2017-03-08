@@ -3,7 +3,9 @@
 namespace Salim\PlateformeBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Advert
@@ -14,6 +16,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Advert
 {   
+    /**
+     * @Gedmo\Slug(fields={"titre"})
+     * @ORM\Column(name="slug", type="string", length=255, unique=true)
+     */
+    private $slug;
 
     /**
     * @ORM\Column(name="nbApplications", type="integer")
@@ -361,5 +368,29 @@ class Advert
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set nbApplications
+     *
+     * @param integer $nbApplications
+     *
+     * @return Advert
+     */
+    public function setNbApplications($nbApplications)
+    {
+        $this->nbApplications = $nbApplications;
+
+        return $this;
+    }
+
+    /**
+     * Get nbApplications
+     *
+     * @return integer
+     */
+    public function getNbApplications()
+    {
+        return $this->nbApplications;
     }
 }

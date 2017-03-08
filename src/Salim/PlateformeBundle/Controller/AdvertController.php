@@ -15,53 +15,40 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class AdvertController extends Controller
 {
 
-	public function menuAction($limit)
-	{
-
-		$listAdverts = array(
-			array('id' => 6,'title' => 'Recherche développeur Symfony'),
-			array('id' => 6,'title' => 'Mission de webmaster'),
-			array('id' => 6,'title' => 'Offre de stage webdesigner')
-			);
-		return $this->render('SalimPlateformeBundle:Advert:menu.html.twig',
-			array(
-				'listAdverts'=> $listAdverts
-				)
-			);
-
-	}
-	
-
 	public function indexAction($page)
 	{
+		
 		// On ne sait pas combien de pages il y a
     	// Mais on sait qu'une page doit être supérieure ou égale à 1
 		if ($page < 1){
-			throw new NotFoundHttpException ('Page \''.$page.'\' inexistante !');
+			throw $this
+			-> createNotFoundException ("Page '".$page."' inexistante !");
 		}
-		$listAdverts = array(
-			array(
-				'title'   => 'Recherche développeur Symfony',
-				'id'      => 6,
-				'author'  => 'Alexandre',
-				'content' => 'Nous recherchons un développeur Symfony débutant sur Lyon. Blabla…',
-				'date'    => new \Datetime()),
-			array(
-				'title'   => 'Mission de webmaster',
-				'id'      => 6,
-				'author'  => 'Hugo',
-				'content' => 'Nous recherchons un webmaster capable de maintenir notre site internet. Blabla…',
-				'date'    => new \Datetime()),
-			array(
-				'title'   => 'Offre de stage webdesigner',
-				'id'      => 6,
-				'author'  => 'Mathieu',
-				'content' => 'Nous proposons un poste pour webdesigner. Blabla…',
-				'date'    => new \Datetime())
-			);
+
+		$nbParPage = 1;
+
+		$listAdverts = $this
+		-> getDoctrine()
+		-> getManager()
+		-> getRepository('SalimPlateformeBundle:Advert')
+		-> getAdverts($page, $nbParPage);
+
+		// On calcule le nombre de pages total grace au
+		// count($listAdverts) qui retourne le nombre total d'annonces
+		$nbPages = ceil(count($listAdverts)/$nbParPage);
+
+		// Si la page n'existe pas, on retourne une 404
+		if ($page > $nbPages) {
+			throw $this
+			-> createNotFoundException("La page ".$page." n'existe pas.");
+		}
 
 		return $this->render('SalimPlateformeBundle:Advert:index.html.twig',
-			array('listAdverts' => $listAdverts)
+			array(
+				'listAdverts' => $listAdverts,
+				'nbPages'     => $nbPages,
+				'page'        => $page
+				)
 			);
 
 	}
@@ -117,6 +104,8 @@ class AdvertController extends Controller
 		// On récupère l'Entity Manager (EM)
 		$em = $this->getDoctrine()->getManager();
 
+
+		/*
 		// On crée l'entité à ajouter
 		// Date et id définis automatiquement par le constructeur
 		// Published est déjà défini à true
@@ -178,23 +167,26 @@ class AdvertController extends Controller
 		// Etape 2 : On flush tout ce qui a été persisté avant 
 		// Doctrine enregistre dans la base les entités persistées
 		$em -> flush();
+		*/
 
-		// Reste de la méthode qu'on avait déjà écrit
+
 		if ($request->isMethod('POST')) {
 			$request 
 			-> getSession() 
 			-> getFlashBag() 
 			-> add('notice', 'Annonce bien enregistrée.');
 
-      	// Redirection vers la page de l'annonce ajoutée
-			return $this -> redirectToRoute('oc_platform_view', array('id' => $advert->getId()));
+      		// Redirection vers la page de l'annonce ajoutée
+			return $this 
+			-> redirectToRoute('oc_platform_view', 
+				array('id' => $advert -> getId()));
 		}
 
     	// Si on n'est pas en POST, alors on affiche le formulaire
-		return $this -> render('SalimPlateformeBundle:Advert:add.html.twig', array('advert' => $advert));
+		return $this 
+		-> render('SalimPlateformeBundle:Advert:add.html.twig');
 
 	}
-
 
 
 	public function editAction($id, Request $request)
@@ -212,39 +204,29 @@ class AdvertController extends Controller
 		if ($advert === null) {
 			throw new NotFoundHttpException("L'annonce ".$id." n'existe pas");
 		}
-
-		//On récupère toutes les catégories de la base (findAll)
-		$listCategories = $em
-		-> getRepository('SalimPlateformeBundle:Category')
-		-> findAll();
-
-		//On lie les catégories à l'annonce
-		foreach ($listCategories as $category) {
-			$advert -> addCategory($category);
-		}
-
-		//On envoie à la base
-		$em -> flush();
-
+		
+		//Gestion du formulaire
+		
 		if ($request->isMethod('POST')){
 
-			$request->getSession()->getFlashBag()->add('notice','Annonce modifiée !');
+			$request
+			-> getSession()
+			-> getFlashBag()
+			-> add('notice','Annonce modifiée !');
 
-			return $this->redirectToRoute('oc_platform_view',array('id'=>5));
+			return $this
+			->redirectToRoute(
+				'oc_platform_view',
+				array('id'=>$advert->getId())
+				);
 
 		}
 
-		$advert = array(
-			'title'   => 'Recherche développeur Symfony',
-			'id'      => $id,
-			'author'  => 'Alexandre',
-			'content' => 'Nous recherchons un développeur Symfony débutant sur Lyon. Blabla…',
-			'date'    => new \Datetime()
-			);
-
 		return $this->render('SalimPlateformeBundle:Advert:edit.html.twig', 
-			array('advert'=>$advert
-				));
+			array(
+				'advert' => $advert
+				)
+			);
 
 	}
 
@@ -266,50 +248,40 @@ class AdvertController extends Controller
 
 		//On boucle sur les catégories de l'annonce et on les supprime
 		foreach ($advert->getCategories() as $category) {
-			$advert -> removeCategory($category);
+			$advert 
+			-> removeCategory($category);
 		}
 
 		//On envoie à la base
 		$em -> flush();
 
-		return $this->render('SalimPlateformeBundle:Advert:delete.html.twig');
+		return $this
+		->render('SalimPlateformeBundle:Advert:delete.html.twig');
 
 	}
 
-	public function editImageAction($advertId)
+
+	public function menuAction($limit)
 	{
 
-		// On récupère l'annonce
-		$advert = $this 
-		-> getDoctrine() 
-		-> getManager() 
-		-> getRepository('SalimPlateformeBundle:Advert') 
-		-> find($advertId);
+		$em = $this
+		-> getDoctrine()
+		-> getManager();
 
-		// On met à jour l'url de l'image liée à l'annonce
-		$advert->getImage()->setUrl('test.png');
+		$listAdverts = $em
+		-> getRepository('SalimPlateformeBundle:Advert')
+		-> findBy(
+				array(),				// Pas de filtre
+				array('date'=>'desc'),	// On trie par date décroissante
+				$limit,					// On sélectionne $limit annonce
+				0						// A partir du premier
+				);
 
-		// On met à jour la base
-		$em->flush();
+		return $this->render('SalimPlateformeBundle:Advert:menu.html.twig',
+			array(
+				'listAdverts' => $listAdverts
+				)
+			);
 
-		//On retourne une réponse (obligatoire)
-		return new Response('OK');
-
-	}
-
-	public function listAction()
-	{
-		$listAdverts = $this
-		->getDoctrine()
-		->getManager()
-		->getRepository('OCPlatformBundle:Advert')
-		->getAdvertWithApplications()
-		;
-
-		foreach ($listAdverts as $advert) {
-    	// Ne déclenche pas de requête : les candidatures sont déjà chargées !
-    	// Vous pourriez faire une boucle dessus pour les afficher toutes
-			$advert->getApplications();
-		}
 	}
 }

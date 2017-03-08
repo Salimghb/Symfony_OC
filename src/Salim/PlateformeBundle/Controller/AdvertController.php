@@ -107,39 +107,33 @@ class AdvertController extends Controller
 
 	public function addAction(Request $request)
 	{
-    // On crée un objet Advert
 		$advert = new Advert();
 
-    // J'ai raccourci cette partie, car c'est plus rapide à écrire !
+
 		$form = $this
 		-> get('form.factory')
 		-> create(AdvertType::class, $advert);
 
-    // Si la requête est en POST
-		if ($request-> isMethod('POST')) {
 
-			$form-> handleRequest($request);
+		if ($request-> isMethod('POST') && $form-> handleRequest($request)->isValid()) {
 
-			if ($form-> isValid()) {
+			$em = $this
+			-> getDoctrine()
+			-> getManager();
 
-				$em = $this
-				-> getDoctrine()
-				-> getManager();
+			$em
+			-> persist($advert);
 
-				$em
-				-> persist($advert);
+			$em
+			-> flush();
 
-				$em
-				-> flush();
+			$request
+			-> getSession()
+			-> getFlashBag()
+			-> add('notice', 'Annonce bien enregistrée.');
 
-				$request
-				-> getSession()
-				-> getFlashBag()
-				-> add('notice', 'Annonce bien enregistrée.');
-
-				return $this
-				-> redirectToRoute('oc_platform_view', array('id' => $advert-> getId()));
-			}
+			return $this
+			-> redirectToRoute('oc_platform_view', array('id' => $advert-> getId()));
 		}
 
 		return $this
@@ -159,7 +153,6 @@ class AdvertController extends Controller
 		-> getDoctrine()
 		-> getManager();
 
-		//On récupère l'annonce correspondante à $id
 		$advert = $em
 		-> getRepository('SalimPlateformeBundle:Advert')
 		-> find($id);
@@ -167,10 +160,15 @@ class AdvertController extends Controller
 		if ($advert === null) {
 			throw new NotFoundHttpException("L'annonce ".$id." n'existe pas");
 		}
-		
-		//Gestion du formulaire
-		
+
+		$form = $this 
+		-> get ('form.factory')
+		-> create(AdvertEditType::class, $advert);
+
 		if ($request->isMethod('POST')){
+
+			$em
+			-> flush();
 
 			$request
 			-> getSession()
@@ -178,23 +176,25 @@ class AdvertController extends Controller
 			-> add('notice','Annonce modifiée !');
 
 			return $this
-			->redirectToRoute(
+			-> redirectToRoute(
 				'oc_platform_view',
-				array('id'=>$advert->getId())
+				array('id' => $advert->getId())
 				);
 
 		}
 
-		return $this->render('SalimPlateformeBundle:Advert:edit.html.twig', 
+		return $this->render('SalimPlateformeBundle:Advert:edit.html.twig',
 			array(
-				'advert' => $advert
+				'advert' => $advert,
+				'form'   => $form -> createView()
 				)
 			);
 
 	}
 
 
-	public function deleteAction($id)
+
+	public function deleteAction(Request $request, $id)
 	{
 		$em = $this 
 		-> getDoctrine()
@@ -209,17 +209,34 @@ class AdvertController extends Controller
 			throw new NotFoundHttpException("L'annonce ".$id." n'existe pas");
 		}
 
-		//On boucle sur les catégories de l'annonce et on les supprime
-		foreach ($advert->getCategories() as $category) {
-			$advert 
-			-> removeCategory($category);
+		// Formulaire vide, ne contenant que le champ CSRF
+		// Permet de proteger la suppression d'annonce contre la faille
+		$form = $this
+		-> get('form.factory')
+		-> create();
+
+		 if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
+
+			$em
+			-> remove($advert);
+			$em
+			-> flush();
+
+			$request
+			-> getSession()
+			-> getFlashBag()
+			-> add('info', "Annonce supprimée!");
+
+			return $this
+			-> redirectToRoute('oc_platform_home');
 		}
 
-		//On envoie à la base
-		$em -> flush();
-
 		return $this
-		->render('SalimPlateformeBundle:Advert:delete.html.twig');
+		-> render('SalimPlateformeBundle:Advert:delete.html.twig',
+			array(
+				'advert' => $advert,
+				'form' => $form->createView()
+				));
 
 	}
 
@@ -247,4 +264,5 @@ class AdvertController extends Controller
 			);
 
 	}
+
 }

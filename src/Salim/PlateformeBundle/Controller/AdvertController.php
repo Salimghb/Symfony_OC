@@ -101,48 +101,44 @@ class AdvertController extends Controller
 	public function addAction(Request $request)
 	{
 
-	// On crée un objet Advert
-		$advert = new Advert();
-    // J'ai raccourci cette partie, car c'est plus rapide à écrire !
+		$advert = new Advert();    
+
 		$form = $this
 		-> get('form.factory')
-		-> createBuilder(FormType::class, $advert)
-		-> add('date',      DateType::class)
-		-> add('title',     TextType::class)
-		-> add('content',   TextareaType::class)
-		-> add('author',    TextType::class)
-		-> add('published', CheckboxType::class, array('required' => false))
-		-> add('save',      SubmitType::class)
-		-> getForm()
-		;
+		-> reate(AdvertType::class, $advert);
 
-    // Si la requête est en POST
 		if ($request->isMethod('POST')) {
-    // On fait le lien Requête <-> Formulaire
-    // À partir de maintenant, la variable $advert contient les valeurs entrées dans le formulaire par le visiteur
+
 			$form->handleRequest($request);
 
-    // On vérifie que les valeurs entrées sont correctes
-    // (Nous verrons la validation des objets en détail dans le prochain chapitre)
 			if ($form->isValid()) {
-    // On enregistre notre objet $advert dans la base de données, par exemple
-				$em = $this->getDoctrine()->getManager();
-				$em->persist($advert);
-				$em->flush();
 
-				$request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
+				$em = $this
+				-> getDoctrine()
+				-> getManager();
 
-    // On redirige vers la page de visualisation de l'annonce nouvellement créée
-				return $this->redirectToRoute('oc_platform_view', array('id' => $advert->getId()));
+				$em
+				-> persist($advert);
+
+				$em
+				-> flush();
+
+				$request
+				-> getSession()
+				-> getFlashBag()
+				-> add('notice', 'Annonce bien enregistrée.');
+
+				return $this
+				-> redirectToRoute('oc_platform_view', array('id' => $advert->getId()));
 			}
 		}
 
-    // À ce stade, le formulaire n'est pas valide car :
-    // - Soit la requête est de type GET, donc le visiteur vient d'arriver sur la page et veut voir le formulaire
-    // - Soit la requête est de type POST, mais le formulaire contient des valeurs invalides, donc on l'affiche de nouveau
-		return $this->render('SalimPlateformeBundle:Advert:add.html.twig', array(
-			'form' => $form->createView(),
-			));
+		return $this
+		-> render('SalimPlateformeBundle:Advert:add.html.twig',
+		 		array(
+					'form' => $form->createView(),
+				)
+			);
 
 	}
 

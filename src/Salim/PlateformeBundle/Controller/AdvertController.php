@@ -3,6 +3,13 @@
 namespace Salim\PlateformeBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Salim\PlateformeBundle\Form\AdvertType;
 use Salim\PlateformeBundle\Entity\Advert;
 use Salim\PlateformeBundle\Entity\Image;
 use Salim\PlateformeBundle\Entity\Application;
@@ -100,18 +107,20 @@ class AdvertController extends Controller
 
 	public function addAction(Request $request)
 	{
+    // On crée un objet Advert
+		$advert = new Advert();
 
-		$advert = new Advert();    
-
+    // J'ai raccourci cette partie, car c'est plus rapide à écrire !
 		$form = $this
 		-> get('form.factory')
-		-> reate(AdvertType::class, $advert);
+		-> create(AdvertType::class, $advert);
 
-		if ($request->isMethod('POST')) {
+    // Si la requête est en POST
+		if ($request-> isMethod('POST')) {
 
-			$form->handleRequest($request);
+			$form-> handleRequest($request);
 
-			if ($form->isValid()) {
+			if ($form-> isValid()) {
 
 				$em = $this
 				-> getDoctrine()
@@ -129,14 +138,14 @@ class AdvertController extends Controller
 				-> add('notice', 'Annonce bien enregistrée.');
 
 				return $this
-				-> redirectToRoute('oc_platform_view', array('id' => $advert->getId()));
+				-> redirectToRoute('oc_platform_view', array('id' => $advert-> getId()));
 			}
 		}
 
 		return $this
-		-> render('SalimPlateformeBundle:Advert:add.html.twig',
-		 		array(
-					'form' => $form->createView(),
+		->  render('SalimPlateformeBundle:Advert:add.html.twig',
+			array(
+				'form' => $form-> createView(),
 				)
 			);
 

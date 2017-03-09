@@ -247,7 +247,7 @@ class Advert
     }
 
     /**
-    * @return \Doctrine\Common\Collections\Collection
+    * @return \Collection
     */
     public function getApplications()
     {

@@ -133,11 +133,11 @@ class AdvertRepository extends EntityRepository
 	public function getAdvertWithCategories (array $categoryNames)
 	{
 
-		$qb = $this -> createQueryBuilder('a');
-		return $qb
+		return $this 
+		-> createQueryBuilder('a')
 		-> innerJoin('a.categories','cat')
 		-> addSelect('cat')
-		-> where( $qb -> expr() -> in('cat.name', $categoryNames))
+		-> where( $expr() -> in('cat.name', $categoryNames))
 		//expr() aide a traduire l'expression en DQL
 		//where($qb->expr()->in('cat.name',$categoryNames)) ===
 		//WHERE 'cat.name' IN $categoryNames

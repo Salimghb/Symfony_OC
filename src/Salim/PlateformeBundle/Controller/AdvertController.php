@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Salim\PlateformeBundle\Form\AdvertType;
+use Salim\PlateformeBundle\Form\AdvertEditType;
 use Salim\PlateformeBundle\Entity\Advert;
 use Salim\PlateformeBundle\Entity\Image;
 use Salim\PlateformeBundle\Entity\Application;
@@ -191,7 +192,6 @@ class AdvertController extends Controller
 			);
 
 	}
-
 
 
 	public function deleteAction(Request $request, $id)

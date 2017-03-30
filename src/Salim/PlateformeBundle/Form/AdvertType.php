@@ -47,23 +47,6 @@ class AdvertType extends AbstractType
     -> add('published', CheckboxType::class, array('required' => false))
     -> add('save',      SubmitType::class);
 
-    $builder
-    -> addEventListener( 
-      FormEvents::PRE_SET_DATA,
-      function(FormEvent $event) {
-        $advert = $event->getData();
-
-        if (null === $advert) {
-          return;
-        }
-
-        if (!$advert->getPublished() || null === $advert->getId()) {
-          $event->getForm()->add('published', CheckboxType::class, array('required' => false));
-        } else {
-          $event->getForm()->remove('published');
-        }
-      }
-      );
   }
   
     /**
